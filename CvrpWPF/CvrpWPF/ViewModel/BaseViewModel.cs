@@ -1,17 +1,21 @@
 ﻿using CvrpWPF.Model;
 using LiveCharts;
 using Microsoft.Win32;
+using Prism.Commands;
+using Prism.Mvvm;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
 using System.Windows.Input;
+using System.Windows.Threading;
 
 namespace CvrpWPF.ViewModel
 {
-    class BaseViewModel : INotifyPropertyChanged
+    class BaseViewModel : BindableBase
     {
         int tamañoPoblacionInicial = 1000;
         int probabilidadCruce = 90;
@@ -28,8 +32,7 @@ namespace CvrpWPF.ViewModel
 
             set
             {
-                tamañoPoblacionInicial = value;
-                RaisePropertyChanged("TamañoPoblacionInicial");
+                SetProperty(ref tamañoPoblacionInicial, value);
             }
         }
 
@@ -42,8 +45,7 @@ namespace CvrpWPF.ViewModel
 
             set
             {
-                probabilidadCruce = value;
-                RaisePropertyChanged("ProbabilidadCruce");
+                SetProperty(ref probabilidadCruce, value);
             }
         }
 
@@ -56,8 +58,7 @@ namespace CvrpWPF.ViewModel
 
             set
             {
-                probabilidadMutacion = value;
-                RaisePropertyChanged("ProbabilidadMutacion");
+                SetProperty(ref probabilidadMutacion, value);
             }
         }
 
@@ -70,8 +71,7 @@ namespace CvrpWPF.ViewModel
 
             set
             {
-                numeroGeneraciones = value;
-                RaisePropertyChanged("NumeroGeneraciones");
+                SetProperty(ref numeroGeneraciones, value);
             }
         }
 
@@ -84,8 +84,7 @@ namespace CvrpWPF.ViewModel
 
             set
             {
-                series = value;
-                RaisePropertyChanged("Series");
+                SetProperty(ref series, value);
             }
         }
 
@@ -99,7 +98,7 @@ namespace CvrpWPF.ViewModel
         {
             get
             {
-                return _clickCommand ?? (_clickCommand = new CommandHandler(() => MyAction(), CanExecuteAction()));
+                return _clickCommand ?? (_clickCommand = new DelegateCommand( MyAction, CanExecuteAction));
             }
         }
 
@@ -117,8 +116,10 @@ namespace CvrpWPF.ViewModel
             if (b == true)
             {
                 ModelManager.Instance.LoadFile(ofd.FileName);
+                ((DelegateCommand)ClickRunCommand).RaiseCanExecuteChanged();
             }
         }
+
 
         #endregion
 
@@ -129,7 +130,7 @@ namespace CvrpWPF.ViewModel
         {
             get
             {
-                return _clickRunCommand ?? (_clickRunCommand = new CommandHandler(() => MyActionRun(), CanExecuteActionRun()));
+                return _clickRunCommand ?? (_clickRunCommand = new DelegateCommand(MyActionRun, CanExecuteActionRun));
             }
         }
 
@@ -137,7 +138,7 @@ namespace CvrpWPF.ViewModel
 
         private bool CanExecuteActionRun()
         {
-            return true;
+            return ModelManager.Instance.Filecvrp != null;
         }
 
         public void MyActionRun()
@@ -158,43 +159,35 @@ namespace CvrpWPF.ViewModel
                 series.RemoveAt(0);
 
             Series.Add(lineSeries);
-            RaisePropertyChanged("Series");
+            
         }
 
         #endregion
 
-        public event PropertyChangedEventHandler PropertyChanged;
-        private void RaisePropertyChanged(string property)
-        {
-            var handlers = PropertyChanged;
-            if (handlers != null)
-            {
-                var args = new PropertyChangedEventArgs(property);
-                handlers(this, args);
-            }
-        }
     }
 
-    public class CommandHandler : ICommand
-    {
-        private Action _action;
-        private bool _canExecute;
-        public CommandHandler(Action action, bool canExecute)
-        {
-            _action = action;
-            _canExecute = canExecute;
-        }
+    //public class CommandHandler : ICommand
+    //{
+    //    private Action _action;
+    //    private bool _canExecute;
+    //    public CommandHandler(Action action, bool canExecute)
+    //    {
+    //        _action = action;
+    //        _canExecute = canExecute;
+    //    }
 
-        public bool CanExecute(object parameter)
-        {
-            return _canExecute;
-        }
+    //    public bool CanExecute(object parameter)
+    //    {
+    //        return _canExecute;
+    //    }
 
-        public event EventHandler CanExecuteChanged;
+    //    public event EventHandler CanExecuteChanged;
 
-        public void Execute(object parameter)
-        {
-            _action();
-        }
-    }
+    //    public void Execute(object parameter)
+    //    {
+    //        _action();
+    //    }
+
+        
+    //}
 }

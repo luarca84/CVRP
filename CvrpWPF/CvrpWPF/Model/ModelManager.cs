@@ -26,10 +26,23 @@ namespace CvrpWPF.Model
             }
         }
 
+        internal FileCvrp Filecvrp
+        {
+            get
+            {
+                return filecvrp;
+            }
+
+            set
+            {
+                filecvrp = value;
+            }
+        }
+
         public void LoadFile(string path)
         {
-            filecvrp = new FileCvrp();
-            filecvrp.LstNodes = new List<Node>();
+            Filecvrp = new FileCvrp();
+            Filecvrp.LstNodes = new List<Node>();
             bool flagNODE_COORD_SECTION = false;
             bool flagDEMAND_SECTION = false;
             bool flagDEPOT_SECTION = false;
@@ -37,22 +50,22 @@ namespace CvrpWPF.Model
             string filename=Path.GetFileNameWithoutExtension(path);
             string[] aux = filename.Split('k');
             int numRutas = int.Parse(aux[1]);
-            filecvrp.NumRutas = numRutas;
+            Filecvrp.NumRutas = numRutas;
 
             foreach (string line in File.ReadLines(path))
             {
                 if (line.StartsWith("NAME : "))
-                    filecvrp.Name = line.Replace("NAME : ", "");
+                    Filecvrp.Name = line.Replace("NAME : ", "");
                 if (line.StartsWith("COMMENT : "))
-                    filecvrp.Comment = line.Replace("COMMENT : ", "");
+                    Filecvrp.Comment = line.Replace("COMMENT : ", "");
                 if (line.StartsWith("TYPE : "))
-                    filecvrp.Type = line.Replace("TYPE : ", "");
+                    Filecvrp.Type = line.Replace("TYPE : ", "");
                 if (line.StartsWith("DIMENSION : "))
-                    filecvrp.Dimension = int.Parse(line.Replace("DIMENSION : ", ""));
+                    Filecvrp.Dimension = int.Parse(line.Replace("DIMENSION : ", ""));
                 if (line.StartsWith("EDGE_WEIGHT_TYPE : "))
-                    filecvrp.EdgeWeightType = line.Replace("EDGE_WEIGHT_TYPE : ", "");
+                    Filecvrp.EdgeWeightType = line.Replace("EDGE_WEIGHT_TYPE : ", "");
                 if (line.StartsWith("CAPACITY : "))
-                    filecvrp.Capacity = int.Parse(line.Replace("CAPACITY : ", ""));
+                    Filecvrp.Capacity = int.Parse(line.Replace("CAPACITY : ", ""));
                 if (line.StartsWith("NODE_COORD_SECTION"))
                 {
                     flagNODE_COORD_SECTION = true;
@@ -86,14 +99,14 @@ namespace CvrpWPF.Model
                     n.Id = id;
                     n.X = x;
                     n.Y = y;
-                    filecvrp.LstNodes.Add(n);
+                    Filecvrp.LstNodes.Add(n);
                 }
                 if (flagDEMAND_SECTION)
                 {
                     string[] array = line.Split(' ');
                     int id = int.Parse(array[0]);
                     int demand = int.Parse(array[1]);
-                    Node n = filecvrp.LstNodes.Where(e => e.Id == id).First();
+                    Node n = Filecvrp.LstNodes.Where(e => e.Id == id).First();
                     n.Demand = demand;
                 }
                 if (flagDEPOT_SECTION)
@@ -102,7 +115,7 @@ namespace CvrpWPF.Model
                     int id = int.Parse(array[1]);
                     if (id != -1)
                     {
-                        filecvrp.IdNodeDepot = id;
+                        Filecvrp.IdNodeDepot = id;
                     }
                 }
             }
@@ -112,9 +125,9 @@ namespace CvrpWPF.Model
         public List<int> RunGA(int tamañoPoblacionInicial, int numerogeneraciones, int probabilidadCruce, int probabilidadMutacion)
         {
             List<int> lstMinFitness = new List<int>();
-            int numRutas = filecvrp.NumRutas;
-            List<Node> lstNodes = filecvrp.LstNodes;
-            Node depot = filecvrp.LstNodes.Where(e => e.Id == filecvrp.IdNodeDepot).First();
+            int numRutas = Filecvrp.NumRutas;
+            List<Node> lstNodes = Filecvrp.LstNodes;
+            Node depot = Filecvrp.LstNodes.Where(e => e.Id == Filecvrp.IdNodeDepot).First();
 
             //int tamañoPoblacionInicial = 1000;
             //int probabilidadCruce = 90;
@@ -126,11 +139,11 @@ namespace CvrpWPF.Model
             List<Cromosoma> poblacion = new List<Cromosoma>();
             for (int i = 0; i < tamañoPoblacionInicial; i++)
             {
-                Cromosoma c = new Cromosoma(numRutas, lstNodes, depot,filecvrp.Capacity);
+                Cromosoma c = new Cromosoma(numRutas, lstNodes, depot,Filecvrp.Capacity);
                 c.CalculateFitness();
                 while (!c.Feasible)
                 {
-                    c = new Cromosoma(numRutas, lstNodes, depot, filecvrp.Capacity);
+                    c = new Cromosoma(numRutas, lstNodes, depot, Filecvrp.Capacity);
                     c.CalculateFitness();
                 }
                 poblacion.Add(c);
