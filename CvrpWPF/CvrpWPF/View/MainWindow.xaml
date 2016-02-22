@@ -1,0 +1,47 @@
+﻿<Window x:Class="CvrpWPF.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:CvrpWPF"
+        xmlns:lvc="clr-namespace:LiveCharts;assembly=LiveCharts"
+        mc:Ignorable="d"
+        Title="CVRP" Height="500" Width="525" WindowStartupLocation="CenterScreen" WindowState="Maximized">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="2*"/>
+            <RowDefinition Height="5*"/>
+        </Grid.RowDefinitions>
+        <StackPanel Grid.Row="0" Orientation="Horizontal">
+            <Button Command="{Binding ClickCommand}">Load File</Button>
+        </StackPanel>
+        <StackPanel Grid.Row="1" Orientation="Vertical">
+            <StackPanel Orientation="Horizontal">
+                <Label>Tamaño Poblacion Inicial</Label>
+                <TextBox Text="{Binding TamañoPoblacionInicial}"></TextBox>
+            </StackPanel>
+            <StackPanel Orientation="Horizontal">
+                <Label>Numero Generaciones </Label>
+                <TextBox Text="{Binding NumeroGeneraciones}"></TextBox>
+            </StackPanel>
+            <StackPanel Orientation="Horizontal">
+                <Label>Probabilidad Cruce</Label>
+                <TextBox Text="{Binding ProbabilidadCruce}"></TextBox>
+            </StackPanel>
+            <StackPanel Orientation="Horizontal">
+                <Label>Probabilidad Mutacion</Label>
+                <TextBox Text="{Binding ProbabilidadMutacion}"></TextBox>
+            </StackPanel>
+            <StackPanel Orientation="Horizontal">
+                <Button Command="{Binding ClickRunCommand}">Run Algoritmo Genetico</Button>
+            </StackPanel>
+        </StackPanel>
+        <TabControl Grid.Row="2" >
+            <TabItem Header="Chart">
+                <lvc:LineChart LegendLocation="Right" Series="{Binding Series}">
+                </lvc:LineChart>
+            </TabItem>
+        </TabControl>
+    </Grid>
+</Window>
