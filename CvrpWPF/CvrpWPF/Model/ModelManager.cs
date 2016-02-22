@@ -128,11 +128,6 @@ namespace CvrpWPF.Model
             int numRutas = Filecvrp.NumRutas;
             List<Node> lstNodes = Filecvrp.LstNodes;
             Node depot = Filecvrp.LstNodes.Where(e => e.Id == Filecvrp.IdNodeDepot).First();
-
-            //int tamañoPoblacionInicial = 1000;
-            //int probabilidadCruce = 90;
-            //int probabilidadMutacion = 80;
-            //int numerogeneraciones = 1000;
             int numeroCrucesPorGeneracion = tamañoPoblacionInicial/2;
 
             Random r = new Random();
