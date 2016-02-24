@@ -1,0 +1,37 @@
+﻿<UserControl x:Class="CvrpWPF.View.UserControls.ucInformation"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:CvrpWPF.View.UserControls"
+             mc:Ignorable="d" 
+             d:DesignHeight="300" d:DesignWidth="300">
+    <Grid>
+        <StackPanel Orientation="Vertical">
+            <TextBlock>
+                <Run>Title:</Run>
+                <Run Text="{Binding Information_Title}"></Run>
+            </TextBlock>
+            <TextBlock>
+                <Run>Comment:</Run>
+                <Run Text="{Binding Information_Comment}"></Run>
+            </TextBlock>
+            <TextBlock>
+                <Run>Type:</Run>
+                <Run Text="{Binding Information_Type}"></Run>
+            </TextBlock>
+            <TextBlock>
+                <Run>Dimension:</Run>
+                <Run Text="{Binding Information_Dimension}"></Run>
+            </TextBlock>
+            <TextBlock>
+                <Run>EDGE_WEIGHT_TYPE:</Run>
+                <Run Text="{Binding Information_EDGE_WEIGHT_TYPE}"></Run>
+            </TextBlock>
+            <TextBlock>
+                <Run>Capacity:</Run>
+                <Run Text="{Binding Information_Capacity}"></Run>
+            </TextBlock>
+        </StackPanel>
+    </Grid>
+</UserControl>

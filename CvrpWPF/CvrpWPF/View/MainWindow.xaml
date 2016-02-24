@@ -4,6 +4,7 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:CvrpWPF.ViewModel"
+        xmlns:usercontrols="clr-namespace:CvrpWPF.View.UserControls"
         xmlns:lvc="clr-namespace:LiveCharts;assembly=LiveCharts"
         xmlns:graphxctrl="clr-namespace:GraphX.Controls;assembly=GraphX.Controls"
         mc:Ignorable="d"
@@ -11,13 +12,15 @@
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
-            <RowDefinition Height="2*"/>
-            <RowDefinition Height="7*"/>
+            <RowDefinition Height="3*"/>
+            <RowDefinition Height="8*"/>
         </Grid.RowDefinitions>
         <StackPanel Grid.Row="0" Orientation="Horizontal">
             <Button Command="{Binding ClickCommand}">Load File</Button>
         </StackPanel>
-        <StackPanel Grid.Row="1" Orientation="Vertical">
+        <TabControl Grid.Row="1">
+            <TabItem Header="Algoritmo Genetico">
+        <StackPanel Orientation="Vertical">
             <StackPanel Orientation="Horizontal">
                 <Label>Tamaño Poblacion Inicial</Label>
                 <TextBox Text="{Binding TamañoPoblacionInicial}"></TextBox>
@@ -38,6 +41,39 @@
                 <Button Command="{Binding ClickRunCommand}">Run Algoritmo Genetico</Button>
             </StackPanel>
         </StackPanel>
+            </TabItem>
+            <TabItem Header="Busqueda Tabu">
+                <StackPanel Orientation="Vertical">
+                    <StackPanel Orientation="Horizontal">
+                        <Label>Max Num Iterations Tabu</Label>
+                        <TextBox Text="{Binding MaxNumIterationsTabu}"></TextBox>
+                        
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal">
+                        <Button Command="{Binding ClickRunTabuCommand}">Run Busqueda Tabu</Button>
+                    </StackPanel>
+                </StackPanel>
+            </TabItem>
+            <TabItem Header="Recocido Simulado">
+                <StackPanel Orientation="Vertical">
+                    <StackPanel Orientation="Horizontal">
+                        <Label>Alpha</Label>
+                        <TextBox Text="{Binding Alpha}"></TextBox>
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal">
+                        <Label>Temperature</Label>
+                        <TextBox Text="{Binding Temperature}"></TextBox>
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal">
+                        <Label>Epsilon</Label>
+                        <TextBox Text="{Binding Epsilon}"></TextBox>
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal">
+                        <Button Command="{Binding ClickRunSACommand}">Run Recocido Simulado</Button>
+                    </StackPanel>
+                </StackPanel>
+            </TabItem>
+        </TabControl>
         <TabControl Grid.Row="2" SelectionChanged="TabControl_SelectionChanged" >
             <TabItem Header="Chart">
                 <lvc:LineChart LegendLocation="Right" Series="{Binding Series}">
@@ -50,6 +86,11 @@
                 <graphxctrl:ZoomControl x:Name="gg_zoomctrl">
                     <local:GraphAreaExample x:Name="gg_Area" LogicCore="{Binding LogicCoreSolution, UpdateSourceTrigger=PropertyChanged}"/>
                 </graphxctrl:ZoomControl>
+            </TabItem>
+            <TabItem Header="Information">
+                <usercontrols:ucInformation>
+                    
+                </usercontrols:ucInformation>
             </TabItem>
         </TabControl>
     </Grid>

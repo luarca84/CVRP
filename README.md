@@ -1,5 +1,5 @@
 # CVRP
-Problema CVRP resuelto con Algoritmos geneticos en WPF
+Problema CVRP resuelto con Algoritmos geneticos, Busqueda Tabu y Recocido Simulado en WPF
 
 Se han utilizado las librerias:
 - LiveCharts

@@ -1,4 +1,5 @@
 ﻿using CvrpWPF.Model;
+using CvrpWPF.View;
 using GraphX.Controls;
 using GraphX.PCL.Common.Models;
 using GraphX.PCL.Logic.Algorithms.LayoutAlgorithms;
@@ -31,6 +32,59 @@ namespace CvrpWPF.ViewModel
         SeriesCollection series = new SeriesCollection();
         string textSolution = string.Empty;
         GXLogicCoreExample logicCoreSolution = null;
+
+        string information_Title = string.Empty;
+        string information_Comment = string.Empty;
+        string information_Type = string.Empty;
+        string information_Dimension = string.Empty;
+        string information_EDGE_WEIGHT_TYPE = string.Empty;
+        string information_Capacity = string.Empty;
+
+        int maxNumIterationsTabu = 1000;
+
+        double alpha = 0.9999;
+        double temperature = 400.0;
+        double epsilon = 0.0000000001;
+
+
+        public double Alpha
+        {
+            get
+            {
+                return alpha;
+            }
+
+            set
+            {
+                SetProperty(ref alpha, value);
+            }
+        }
+
+        public double Temperature
+        {
+            get
+            {
+                return temperature;
+            }
+
+            set
+            {
+                SetProperty(ref temperature, value);
+            }
+        }
+
+        public double Epsilon
+        {
+            get
+            {
+                return epsilon;
+            }
+
+            set
+            {
+                SetProperty(ref epsilon, value);
+            }
+        }
 
         public int TamañoPoblacionInicial
         {
@@ -123,6 +177,97 @@ namespace CvrpWPF.ViewModel
             }
         }
 
+        public string Information_Title
+        {
+            get
+            {
+                return information_Title;
+            }
+
+            set
+            {
+                SetProperty(ref information_Title, value);
+            }
+        }
+
+        public string Information_Comment
+        {
+            get
+            {
+                return information_Comment;
+            }
+
+            set
+            {
+                SetProperty(ref information_Comment, value);
+            }
+        }
+
+        public string Information_Type
+        {
+            get
+            {
+                return information_Type;
+            }
+
+            set
+            {
+                SetProperty(ref information_Type, value);
+            }
+        }
+
+        public string Information_Dimension
+        {
+            get
+            {
+                return information_Dimension;
+            }
+
+            set
+            {
+                SetProperty(ref information_Dimension, value);
+            }
+        }
+
+        public string Information_EDGE_WEIGHT_TYPE
+        {
+            get
+            {
+                return information_EDGE_WEIGHT_TYPE;
+            }
+
+            set
+            {
+                SetProperty(ref information_EDGE_WEIGHT_TYPE, value);
+            }
+        }
+
+        public string Information_Capacity
+        {
+            get
+            {
+                return information_Capacity;
+            }
+
+            set
+            {
+                SetProperty(ref information_Capacity, value);
+            }
+        }
+
+        public int MaxNumIterationsTabu
+        {
+            get
+            {
+                return maxNumIterationsTabu;
+            }
+
+            set
+            {
+                SetProperty(ref maxNumIterationsTabu, value);
+            }
+        }
+
 
 
 
@@ -152,6 +297,15 @@ namespace CvrpWPF.ViewModel
             {
                 ModelManager.Instance.LoadFile(ofd.FileName);
                 ((DelegateCommand)ClickRunCommand).RaiseCanExecuteChanged();
+                ((DelegateCommand)ClickRunTabuCommand).RaiseCanExecuteChanged();
+                ((DelegateCommand)ClickRunSACommand).RaiseCanExecuteChanged();
+
+                Information_Title = ModelManager.Instance.Filecvrp.Name;
+                Information_Capacity = ModelManager.Instance.Filecvrp.Capacity.ToString();
+                Information_Comment = ModelManager.Instance.Filecvrp.Comment;
+                Information_Dimension = ModelManager.Instance.Filecvrp.Dimension.ToString();
+                Information_EDGE_WEIGHT_TYPE = ModelManager.Instance.Filecvrp.EdgeWeightType;
+                Information_Type = ModelManager.Instance.Filecvrp.Type;
             }
         }
 
@@ -168,8 +322,7 @@ namespace CvrpWPF.ViewModel
                 return _clickRunCommand ?? (_clickRunCommand = new DelegateCommand(MyActionRun, CanExecuteActionRun));
             }
         }
-
-        
+              
 
         private bool CanExecuteActionRun()
         {
@@ -181,7 +334,7 @@ namespace CvrpWPF.ViewModel
             Solution s = ModelManager.Instance.RunGA(TamañoPoblacionInicial, NumeroGeneraciones, ProbabilidadCruce, ProbabilidadMutacion);
             UpdateTabChart(s);
             UpdateTabSolution(s);
-            UpdateTabGraphX(s);
+            UpdateTabGraphX(s);   
         }
 
         private void UpdateTabGraphX(Solution s)
@@ -281,6 +434,61 @@ namespace CvrpWPF.ViewModel
                 series.RemoveAt(0);
 
             Series.Add(lineSeries);
+        }
+
+        #endregion
+
+
+        #region Button Run Tabu
+
+        private ICommand _clickRunTabuCommand;
+        public ICommand ClickRunTabuCommand
+        {
+            get
+            {
+                return _clickRunTabuCommand ?? (_clickRunTabuCommand = new DelegateCommand(MyActionRunTabu, CanExecuteActionRunTabu));
+            }
+        }
+        
+
+        private bool CanExecuteActionRunTabu()
+        {
+            return ModelManager.Instance.Filecvrp != null;
+        }
+
+        public void MyActionRunTabu()
+        {
+            Solution s = ModelManager.Instance.RunTS(MaxNumIterationsTabu);
+            UpdateTabChart(s);
+            UpdateTabSolution(s);
+            UpdateTabGraphX(s);
+        }
+
+        #endregion
+
+
+        #region Button Run SA
+
+        private ICommand _clickRunSACommand;
+        public ICommand ClickRunSACommand
+        {
+            get
+            {
+                return _clickRunSACommand ?? (_clickRunSACommand = new DelegateCommand(MyActionRunSA, CanExecuteActionRunSA));
+            }
+        }        
+
+        private bool CanExecuteActionRunSA()
+        {
+            return ModelManager.Instance.Filecvrp != null;
+        }
+
+        public void MyActionRunSA()
+        {
+            Solution s = ModelManager.Instance.RunSA(Alpha,Temperature,Epsilon);
+            UpdateTabChart(s);
+            UpdateTabSolution(s);
+            UpdateTabGraphX(s);
         }
 
         #endregion

@@ -121,6 +121,127 @@ namespace CvrpWPF.Model
             }
         }
 
+        public Solution RunSA(double alpha, double temperature,double epsilon)
+        {
+            int iteration = -1;
+
+            //the probability
+            double proba;
+            //double alpha = 0.9999;
+            //double temperature = 400.0;
+            //double epsilon = 0.0000000001;
+            double delta;
+
+            List<double> lstMinFitness = new List<double>();
+            int numRutas = Filecvrp.NumRutas;
+            List<Node> lstNodes = Filecvrp.LstNodes;
+            Node depot = Filecvrp.LstNodes.Where(e => e.Id == Filecvrp.IdNodeDepot).First();
+            SASolution currentSolutionSA = new SASolution(numRutas, lstNodes, depot, Filecvrp.Capacity);
+            currentSolutionSA.CalculateFitness();
+            double distance = currentSolutionSA.Fitness;
+            Random r = new Random();
+
+            //while the temperature did not reach epsilon
+            while (temperature > epsilon)
+            {
+                iteration++;
+
+                //get the next random permutation of distances 
+                int selectedNode = r.Next(0, lstNodes.Count);
+                while(depot.Id == lstNodes[selectedNode].Id)
+                    selectedNode = r.Next(0, lstNodes.Count);
+                Node n = lstNodes[selectedNode];
+                int routeindex = r.Next(0, numRutas);
+                SASolution nextSolutionSA = new SASolution(currentSolutionSA, n, routeindex);
+                nextSolutionSA.CalculateFitness();
+                //compute the distance of the new permuted configuration
+                delta = nextSolutionSA.Fitness - distance;
+                //if the new distance is better accept it and assign it
+                if (delta < 0  && nextSolutionSA.Feasible)
+                {
+                    currentSolutionSA = nextSolutionSA;
+                    distance = delta + distance;
+                }
+                else
+                {
+                    proba = r.Next();
+                    //if the new distance is worse accept 
+                    //it but with a probability level
+                    //if the probability is less than 
+                    //E to the power -delta/temperature.
+                    //otherwise the old value is kept
+                    if (proba < Math.Exp(-delta / temperature))
+                    {
+                        currentSolutionSA = nextSolutionSA;
+                        distance = delta + distance;
+                    }
+                }
+                //cooling process on every iteration
+                temperature *= alpha;
+
+                //lstMinFitness.Add(currentSolutionSA.Fitness);
+            }
+
+            distance = currentSolutionSA.Fitness;
+
+            Solution s = new Solution();
+            s.LstMinFitness = lstMinFitness;
+            s.BestRutas = currentSolutionSA.Rutas;
+            s.FitnessBestRutas = currentSolutionSA.Fitness;
+            return s;
+        }
+
+        public Solution RunTS(int maxNumIterations)
+        {
+            List<double> lstMinFitness = new List<double>();
+            int maxLengthTabuList = 10;
+            int numRutas = Filecvrp.NumRutas;
+            List<Node> lstNodes = Filecvrp.LstNodes;
+            Node depot = Filecvrp.LstNodes.Where(e => e.Id == Filecvrp.IdNodeDepot).First();
+            TabuSolution ts = new TabuSolution(numRutas, lstNodes, depot, Filecvrp.Capacity);
+            ts.CalculateFitness();
+            TabuSolution tsBestSolution = ts;
+            List<Node> tabuList = new List<Node>();
+            Random r = new Random();
+            for (int i =0 ; i < maxNumIterations; i++)
+            {
+                TabuSolution mejorsolucioncandidata = null;
+                double fitnessmejorsolucioncandidata = double.MaxValue;
+                Node selectedNode = null;
+                foreach (Node n in lstNodes)
+                {
+                    if (n.Id != depot.Id && !tabuList.Contains(n))
+                    {
+                        int routeIndex = r.Next(0, numRutas);
+                        TabuSolution solcandidata = new TabuSolution(ts, n, routeIndex);
+                        solcandidata.CalculateFitness();
+                        if (solcandidata.Feasible && solcandidata.Fitness < fitnessmejorsolucioncandidata)
+                        {
+                            fitnessmejorsolucioncandidata = solcandidata.Fitness;
+                            mejorsolucioncandidata = solcandidata;
+                            selectedNode = n;
+                        }
+                    }
+                }
+
+                ts = mejorsolucioncandidata;
+                
+
+                if (ts.Fitness < tsBestSolution.Fitness)
+                    tsBestSolution = ts;
+                lstMinFitness.Add(tsBestSolution.Fitness);
+
+                tabuList.Add(selectedNode);
+                if (tabuList.Count > maxLengthTabuList)
+                    tabuList.RemoveAt(0);
+            }
+
+            Solution s = new Solution();
+            s.LstMinFitness = lstMinFitness;
+            s.BestRutas = tsBestSolution.Rutas;
+            s.FitnessBestRutas = tsBestSolution.Fitness;
+            return s;
+        }
 
         public Solution RunGA(int tamañoPoblacionInicial, int numerogeneraciones, int probabilidadCruce, int probabilidadMutacion)
         {
